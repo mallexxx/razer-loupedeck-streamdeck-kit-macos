@@ -157,32 +157,32 @@ struct SimulatorContainer: View {
 }
 
 #if DEBUG
-@available(iOS 17, *)
+@available(iOS 17, macOS 14, *)
 #Preview("Plus", traits: .fixedLayout(width: 600, height: 600)) {
     SimulatorContainer(streamDeck: .plus)
 }
 
-@available(iOS 17, *)
+@available(iOS 17, macOS 14, *)
 #Preview("Mini", traits: .fixedLayout(width: 600, height: 600)) {
     SimulatorContainer(streamDeck: .mini)
 }
 
-@available(iOS 17, *)
+@available(iOS 17, macOS 14, *)
 #Preview("Regular", traits: .fixedLayout(width: 600, height: 600)) {
     SimulatorContainer(streamDeck: .regular)
 }
 
-@available(iOS 17, *)
+@available(iOS 17, macOS 14, *)
 #Preview("XL", traits: .fixedLayout(width: 600, height: 600)) {
     SimulatorContainer(streamDeck: .xl)
 }
 
-@available(iOS 17, *)
+@available(iOS 17, macOS 14, *)
 #Preview("Pedal", traits: .fixedLayout(width: 600, height: 600)) {
     SimulatorContainer(streamDeck: .pedal)
 }
 
-@available(iOS 17, *)
+@available(iOS 17, macOS 14, *)
 #Preview("Neo", traits: .fixedLayout(width: 600, height: 600)) {
     SimulatorContainer(streamDeck: .neo)
 }

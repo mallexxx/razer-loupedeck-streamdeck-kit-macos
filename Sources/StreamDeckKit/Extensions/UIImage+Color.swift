@@ -25,6 +25,8 @@
 //  SOFTWARE.
 //
 
+#if os(iOS)
+
 import UIKit
 
 public extension UIImage {
@@ -36,3 +38,26 @@ public extension UIImage {
         }
     }
 }
+
+#else
+
+import Accelerate
+import AppKit
+
+public extension NSImage {
+
+    static func sdk_colored(_ color: NSColor, size: NSSize = .init(width: 1, height: 1)) -> NSImage {
+        let image = NSImage(size: size)
+        image.lockFocus()
+
+        color.setFill()
+        NSRect(x: 0, y: 0, width: size.width, height: size.height).fill()
+
+        image.unlockFocus()
+
+        return image
+    }
+
+}
+
+#endif

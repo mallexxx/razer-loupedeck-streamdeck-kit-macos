@@ -191,7 +191,7 @@ private extension StreamDeckSimulatorView {
         }
         .background {
             if let backgroundImage = backgroundImage {
-                Image(uiImage: backgroundImage)
+                Image(backgroundImage)
             } else {
                 Color.black
             }
@@ -259,7 +259,7 @@ private extension StreamDeckSimulatorView {
 
 // MARK: - Preview
 
-@available(iOS 17, *)
+@available(iOS 17, macOS 14, *)
 #Preview("Square", traits: .fixedLayout(width: 700, height: 700)) {
     Group {
         let config = StreamDeckProduct.mini.createConfiguration()
@@ -272,7 +272,7 @@ private extension StreamDeckSimulatorView {
     }
 }
 
-@available(iOS 17, *)
+@available(iOS 17, macOS 14, *)
 #Preview("Landscape", traits: .landscapeLeft) {
     Group {
         StreamDeckSimulatorView.create(

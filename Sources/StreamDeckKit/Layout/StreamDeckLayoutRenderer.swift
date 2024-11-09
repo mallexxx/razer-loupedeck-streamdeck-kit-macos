@@ -58,7 +58,13 @@ final class StreamDeckLayoutRenderer {
         cancellable = renderer
             .objectWillChange.prepend(())
             .receive(on: RunLoop.main) // Run on next loop so "will change" becomes "did change".
-            .compactMap { _ in renderer.uiImage }
+            .compactMap { _ in
+#if os(iOS)
+                renderer.uiImage
+#else
+                renderer.nsImage
+#endif
+            }
             .sink { [weak self] image in
                 self?.updateLayout(image, on: device)
             }
@@ -132,13 +138,10 @@ final class StreamDeckLayoutRenderer {
         }
     }
 
-    private func log(_ message: String) {
-        StreamDeckKit.log(.debug, "SDRender: \(message)")
-    }
 }
 
 extension UIImage {
-
+#if os(iOS)
     func cropping(to rect: CGRect) -> UIImage {
         var rect = rect
 
@@ -152,5 +155,17 @@ extension UIImage {
 
         return UIImage(cgImage: cropped, scale: scale, orientation: imageOrientation)
     }
+#else
+    func cropping(to rect: CGRect) -> UIImage {
+        // Get the first representation (assuming it's a bitmap representation)
+        guard let cgImage = self.cgImage(forProposedRect: nil, context: nil, hints: nil),
+              let croppedCGImage = cgImage.cropping(to: rect) else { return self }
 
+        // Create a new NSImage from the cropped CGImage
+        let croppedImage = NSImage(cgImage: croppedCGImage, size: NSSize(width: rect.width, height: rect.height))
+
+        return croppedImage
+    }
+
+#endif
 }

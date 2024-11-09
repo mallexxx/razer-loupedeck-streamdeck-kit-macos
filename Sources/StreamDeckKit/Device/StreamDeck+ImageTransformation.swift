@@ -26,7 +26,53 @@
 //
 
 import Foundation
+#if canImport(UIKit)
 import UIKit
+public typealias DrawingActions = (UIGraphicsImageRendererContext) -> Void
+#else
+import AppKit
+public typealias UIGraphicsImageRenderer = NSImage
+
+public struct UIGraphicsImageRendererScale {
+    public let rawValue: CGFloat
+    public init(displayScale: CGFloat) {
+        self.rawValue = displayScale
+    }
+}
+public struct UIGraphicsImageRendererFormat {
+    public let displayScale: CGFloat
+    public init(for scale: UIGraphicsImageRendererScale) {
+        self.displayScale = scale.rawValue
+    }
+}
+
+public extension NSImage {
+    typealias DrawingActions = (NSGraphicsContext) -> Void
+
+    convenience init(size: CGSize, format: UIGraphicsImageRendererFormat) {
+        self.init(size: size)
+    }
+
+    func image(actions: (NSGraphicsContext) -> Void) -> NSImage {
+        lockFocus()
+        if let context = NSGraphicsContext.current {
+            actions(context)
+        }
+        unlockFocus()
+        return self
+    }
+
+    func jpegData(withCompressionQuality quality: CGFloat, actions: ((NSGraphicsContext) -> Void)? = nil) -> Data? {
+        guard let cgImage = (actions.map({ actions in image(actions: actions) }) ?? self).cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            return nil
+        }
+        let rep = NSBitmapImageRep(cgImage: cgImage)
+        rep.size = size
+        return rep.representation(using: .jpeg, properties: [.compressionFactor: quality])
+    }
+
+}
+#endif
 import UniformTypeIdentifiers
 
 extension StreamDeck {
@@ -51,7 +97,7 @@ extension StreamDeck {
             context.cgContext.concatenate(transform)
 
             context.cgContext.setFillColor(UIColor.black.cgColor)
-            context.fill(.init(origin: .zero.translatedByHalf(of: newSize), size: size))
+            context.cgContext.fill([CGRect(origin: .zero.translatedByHalf(of: newSize), size: size)])
 
             let rect = image.drawingRect(resizedTo: newSize, scaleAspectFit: scaleAspectFit)
             image.draw(in: CGRect(origin: rect.origin.translatedByHalf(of: newSize), size: rect.size))
@@ -110,7 +156,11 @@ private extension UIImage {
     }
 
     func bitmapData() -> Data? {
+        #if os(iOS)
         guard let cgImage = cgImage else { return nil }
+        #else
+        guard let cgImage = cgImage(forProposedRect: nil, context: nil, hints: nil) else { return nil }
+        #endif
         return autoreleasepool { () -> Data? in
             let data = NSMutableData()
             guard let imageDestination = CGImageDestinationCreateWithData(

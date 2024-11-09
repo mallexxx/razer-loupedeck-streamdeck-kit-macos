@@ -26,7 +26,12 @@
 //
 
 import Combine
+import OSLog
+#if canImport(UIKit)
 import UIKit
+#else
+import AppKit
+#endif
 
 /// A mechanism that enables Stream Deck driver state observation and device detection.
 ///
@@ -188,11 +193,12 @@ public final class StreamDeckSession {
                 .store(in: &cancellables)
         }
 
+#if os(iOS)
         NotificationCenter
             .default
             .publisher(for: UIApplication.willEnterForegroundNotification)
             .sink { [weak self] _ in
-                guard let self = self else { return }
+                guard let self else { return }
                 Task { await self.internalSession.start() }
             }
             .store(in: &cancellables)
@@ -201,10 +207,28 @@ public final class StreamDeckSession {
             .default
             .publisher(for: UIApplication.didEnterBackgroundNotification)
             .sink { [weak self] _ in
-                guard let self = self else { return }
+                guard let self else { return }
                 Task { await self.internalSession.stop() }
             }
             .store(in: &cancellables)
+#else
+        NSWorkspace.shared
+            .notificationCenter
+            .publisher(for: NSWorkspace.didWakeNotification).sink { [weak self] _ in
+                guard let self else { return }
+                Logger.default.debug("☀️ Did wake")
+                Task { await self.internalSession.start() }
+            }
+            .store(in: &cancellables)
+        NSWorkspace.shared
+            .notificationCenter
+            .publisher(for: NSWorkspace.willSleepNotification).sink { [weak self] _ in
+                guard let self else { return }
+                Logger.default.debug("😴 Will sleep")
+                Task { await self.internalSession.stop() }
+            }
+            .store(in: &cancellables)
+#endif
 
         Task { await self.internalSession.start() }
     }

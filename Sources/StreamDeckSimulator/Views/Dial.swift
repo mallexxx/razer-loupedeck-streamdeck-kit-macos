@@ -27,6 +27,7 @@
 
 import Foundation
 import SwiftUI
+import StreamDeckKit
 
 /// Stolen from https://gist.github.com/ts95/9f8e05380824c6ca999ab3bc1ff8541f
 struct Dial: View {

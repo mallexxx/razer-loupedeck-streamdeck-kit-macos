@@ -198,38 +198,34 @@ struct DeviceSpecificStreamDeckLayout: View {
 
 import StreamDeckSimulator
 
-#Preview("Stream Decks Overview") {
-    Grid {
-        GridRow {
-            StreamDeckSimulator.PreviewView(streamDeck: .plus) { device in
-                device.render(DeviceSpecificStreamDeckLayout())
-            }
-
-            StreamDeckSimulator.PreviewView(streamDeck: .neo) { device in
-                device.render(DeviceSpecificStreamDeckLayout())
-            }
-        }
-
-        GridRow {
-            StreamDeckSimulator.PreviewView(streamDeck: .mini) { device in
-                device.render(DeviceSpecificStreamDeckLayout())
-            }
-
-            StreamDeckSimulator.PreviewView(streamDeck: .regular) { device in
-                device.render(DeviceSpecificStreamDeckLayout())
-            }
-        }
-
-        GridRow {
-            StreamDeckSimulator.PreviewView(streamDeck: .xl) { device in
-                device.render(DeviceSpecificStreamDeckLayout())
-            }
-
-            StreamDeckSimulator.PreviewView(streamDeck: .pedal) { device in
-                device.render(DeviceSpecificStreamDeckLayout())
-            }
-        }
+#Preview("Stream Deck Plus") {
+    StreamDeckSimulator.PreviewView(streamDeck: .plus) { device in
+        device.render(DeviceSpecificStreamDeckLayout())
     }
 }
-
+#Preview("Stream Deck Neo") {
+    StreamDeckSimulator.PreviewView(streamDeck: .neo) { device in
+        device.render(DeviceSpecificStreamDeckLayout())
+    }
+}
+#Preview("Stream Deck Mini") {
+    StreamDeckSimulator.PreviewView(streamDeck: .mini) { device in
+        device.render(DeviceSpecificStreamDeckLayout())
+    }
+}
+#Preview("Stream Decks Regular") {
+    StreamDeckSimulator.PreviewView(streamDeck: .regular) { device in
+        device.render(DeviceSpecificStreamDeckLayout())
+    }
+}
+#Preview("Stream Decks XL") {
+    StreamDeckSimulator.PreviewView(streamDeck: .xl) { device in
+        device.render(DeviceSpecificStreamDeckLayout())
+    }
+}
+#Preview("Stream Decks Pedal") {
+    StreamDeckSimulator.PreviewView(streamDeck: .pedal) { device in
+        device.render(DeviceSpecificStreamDeckLayout())
+    }
+}
 #endif

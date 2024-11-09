@@ -27,7 +27,9 @@
 
 import StreamDeckKit
 import SwiftUI
+#if canImport(UIKit)
 import UIKit
+#endif
 
 /// A simulator overlay for different Stream Deck products.
 ///
@@ -55,8 +57,8 @@ public final class StreamDeckSimulator {
     }
 
     private class PassThroughWindow: UIWindow {
+#if os(iOS)
         override var canBecomeKey: Bool { false }
-
         override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
             // Get view from superclass.
             guard let hitView = super.hitTest(point, with: event) else { return nil }
@@ -76,6 +78,7 @@ public final class StreamDeckSimulator {
             }
             return viewToCheck.point(inside: convert(point, to: viewToCheck), with: event)
         }
+#endif
     }
 
     private static let shared = StreamDeckSimulator()
@@ -87,10 +90,12 @@ public final class StreamDeckSimulator {
     private var lastSimulatorSize: CGFloat?
     private var lastSelectedProduct: StreamDeckProduct?
 
+#if os (iOS)
     private var activeScene: UIWindowScene? {
         let windowScene = UIApplication.shared.connectedScenes as? Set<UIWindowScene>
         return windowScene?.first { $0.activationState == .foregroundActive }
     }
+#endif
 
     /// Returns whether the Stream Deck simulator overlay is visible.
     public static var isVisible: Bool {
@@ -121,12 +126,14 @@ public final class StreamDeckSimulator {
 
     private func showSimulator(_ product: StreamDeckProduct) {
         close()
-
+#if os (iOS)
         guard let scene = activeScene else { return }
-
+        let window = PassThroughWindow(windowScene: scene)
+#else
+        let window = PassThroughWindow(contentRect: NSRect(x: 0, y: 0, width: 1024, height: 1024), styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
+#endif
         lastSelectedProduct = product
 
-        let window = PassThroughWindow(windowScene: scene)
         let simulatorContainer = SimulatorContainer(
             streamDeck: product,
             size: lastSimulatorSize ?? 400,

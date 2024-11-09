@@ -26,6 +26,17 @@
 		30C0D5132B8DF55E0087E095 /* StreamDeckSimulator in Frameworks */ = {isa = PBXBuildFile; productRef = 30C0D5122B8DF55E0087E095 /* StreamDeckSimulator */; };
 		30C0D5162B8E115F0087E095 /* StreamDeckKit in Frameworks */ = {isa = PBXBuildFile; productRef = 30C0D5152B8E115F0087E095 /* StreamDeckKit */; };
 		30C0D5182B8E115F0087E095 /* StreamDeckSimulator in Frameworks */ = {isa = PBXBuildFile; productRef = 30C0D5172B8E115F0087E095 /* StreamDeckSimulator */; };
+		84988DB02CDA929500E49AA1 /* BaseStreamDeckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B9B65D42B85E4CD001C06F4 /* BaseStreamDeckView.swift */; };
+		84988DB12CDA929500E49AA1 /* 3_AnimatedStreamDeckLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD459DD2B86038800964743 /* 3_AnimatedStreamDeckLayout.swift */; };
+		84988DB22CDA929500E49AA1 /* 2_StatefulStreamDeckLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B063EFB2B84DBF800778376 /* 2_StatefulStreamDeckLayout.swift */; };
+		84988DB32CDA929500E49AA1 /* 4_DeviceSpecificStreamDeckLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BA1D8362CC0029B0096F4BF /* 4_DeviceSpecificStreamDeckLayout.swift */; };
+		84988DB42CDA929500E49AA1 /* ExampleDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2153E38E2B850CD0001E37B5 /* ExampleDataModel.swift */; };
+		84988DB52CDA929500E49AA1 /* 1_StatelessStreamDeckLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B063EF92B84D51E00778376 /* 1_StatelessStreamDeckLayout.swift */; };
+		84988DC62CDA97C700E49AA1 /* StreamDeckKit in Frameworks */ = {isa = PBXBuildFile; productRef = 84988DC52CDA97C700E49AA1 /* StreamDeckKit */; };
+		84B994C32CDCFCD400BF227C /* StreamDeckSimulator in Frameworks */ = {isa = PBXBuildFile; productRef = 84B994C22CDCFCD400BF227C /* StreamDeckSimulator */; };
+		84B994C42CDF2E5A00BF227C /* StreamDeckKitExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3073016C2B3DB70000C5F5B4 /* StreamDeckKitExampleApp.swift */; };
+		84B994C52CDF336400BF227C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3073016E2B3DB70000C5F5B4 /* ContentView.swift */; };
+		84B994C62CDF336A00BF227C /* EnvironmentValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD459DF2B86093300964743 /* EnvironmentValues.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +55,8 @@
 		307301732B3DB70100C5F5B4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		307301852B3DBC7600C5F5B4 /* Example App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Example App.entitlements"; sourceTree = "<group>"; };
 		307301872B3DC01E00C5F5B4 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		84988D9F2CDA924F00E49AA1 /* MacExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MacExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		84988DC22CDA971900E49AA1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/Accelerate.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +72,15 @@
 				307301842B3DBA7900C5F5B4 /* StreamDeckSimulator in Frameworks */,
 				30C0D5182B8E115F0087E095 /* StreamDeckSimulator in Frameworks */,
 				3073017C2B3DB96200C5F5B4 /* StreamDeckKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		84988D9C2CDA924F00E49AA1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				84B994C32CDCFCD400BF227C /* StreamDeckSimulator in Frameworks */,
+				84988DC62CDA97C700E49AA1 /* StreamDeckKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,6 +113,7 @@
 			isa = PBXGroup;
 			children = (
 				307301692B3DB70000C5F5B4 /* StreamDeckKit StreamDeckKitExample.app */,
+				84988D9F2CDA924F00E49AA1 /* MacExample.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -121,6 +144,7 @@
 		307301862B3DC01E00C5F5B4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				84988DC22CDA971900E49AA1 /* Accelerate.framework */,
 				307301872B3DC01E00C5F5B4 /* IOKit.framework */,
 			);
 			name = Frameworks;
@@ -157,6 +181,27 @@
 			productReference = 307301692B3DB70000C5F5B4 /* StreamDeckKit StreamDeckKitExample.app */;
 			productType = "com.apple.product-type.application";
 		};
+		84988D9E2CDA924F00E49AA1 /* MacExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 84988DAB2CDA925000E49AA1 /* Build configuration list for PBXNativeTarget "MacExample" */;
+			buildPhases = (
+				84988D9B2CDA924F00E49AA1 /* Sources */,
+				84988D9C2CDA924F00E49AA1 /* Frameworks */,
+				84988D9D2CDA924F00E49AA1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MacExample;
+			packageProductDependencies = (
+				84988DC52CDA97C700E49AA1 /* StreamDeckKit */,
+				84B994C22CDCFCD400BF227C /* StreamDeckSimulator */,
+			);
+			productName = MacExample;
+			productReference = 84988D9F2CDA924F00E49AA1 /* MacExample.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -189,6 +234,7 @@
 			projectRoot = "";
 			targets = (
 				307301682B3DB70000C5F5B4 /* StreamDeckKitExample App */,
+				84988D9E2CDA924F00E49AA1 /* MacExample */,
 			);
 		};
 /* End PBXProject section */
@@ -200,6 +246,13 @@
 			files = (
 				307301742B3DB70100C5F5B4 /* Preview Assets.xcassets in Resources */,
 				307301712B3DB70100C5F5B4 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		84988D9D2CDA924F00E49AA1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,6 +294,22 @@
 				0B063EFA2B84D51E00778376 /* 1_StatelessStreamDeckLayout.swift in Sources */,
 				0B9B65D52B85E4CD001C06F4 /* BaseStreamDeckView.swift in Sources */,
 				0BD459E02B86093300964743 /* EnvironmentValues.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		84988D9B2CDA924F00E49AA1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				84988DB02CDA929500E49AA1 /* BaseStreamDeckView.swift in Sources */,
+				84B994C52CDF336400BF227C /* ContentView.swift in Sources */,
+				84988DB12CDA929500E49AA1 /* 3_AnimatedStreamDeckLayout.swift in Sources */,
+				84988DB22CDA929500E49AA1 /* 2_StatefulStreamDeckLayout.swift in Sources */,
+				84988DB32CDA929500E49AA1 /* 4_DeviceSpecificStreamDeckLayout.swift in Sources */,
+				84B994C42CDF2E5A00BF227C /* StreamDeckKitExampleApp.swift in Sources */,
+				84988DB42CDA929500E49AA1 /* ExampleDataModel.swift in Sources */,
+				84B994C62CDF336A00BF227C /* EnvironmentValues.swift in Sources */,
+				84988DB52CDA929500E49AA1 /* 1_StatelessStreamDeckLayout.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -434,6 +503,65 @@
 			};
 			name = Release;
 		};
+		84988DAC2CDA925000E49AA1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Example App/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.elgato.samplecode.${DEVELOPMENT_TEAM}.StreamDeckKit-Example";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		84988DAD2CDA925000E49AA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Example App/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = "";
+				ENABLE_HARDENED_RUNTIME = NO;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.elgato.samplecode.${DEVELOPMENT_TEAM}.StreamDeckKit-Example";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -451,6 +579,15 @@
 			buildConfigurations = (
 				307301782B3DB70100C5F5B4 /* Debug */,
 				307301792B3DB70100C5F5B4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		84988DAB2CDA925000E49AA1 /* Build configuration list for PBXNativeTarget "MacExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				84988DAC2CDA925000E49AA1 /* Debug */,
+				84988DAD2CDA925000E49AA1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -495,6 +632,15 @@
 		};
 		30C0D5172B8E115F0087E095 /* StreamDeckSimulator */ = {
 			isa = XCSwiftPackageProductDependency;
+			productName = StreamDeckSimulator;
+		};
+		84988DC52CDA97C700E49AA1 /* StreamDeckKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = StreamDeckKit;
+		};
+		84B994C22CDCFCD400BF227C /* StreamDeckSimulator */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 30C0D5142B8E115F0087E095 /* XCLocalSwiftPackageReference ".." */;
 			productName = StreamDeckSimulator;
 		};
 /* End XCSwiftPackageProductDependency section */

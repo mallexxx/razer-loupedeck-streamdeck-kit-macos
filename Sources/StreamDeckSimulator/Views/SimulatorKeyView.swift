@@ -28,6 +28,10 @@
 import StreamDeckKit
 import SwiftUI
 
+#if canImport(UIKit)
+import UIKit
+#endif
+
 struct SimulatorKeyView: View {
     static let emptyImage = UIImage()
 
@@ -38,7 +42,7 @@ struct SimulatorKeyView: View {
     let index: Int
 
     var body: some View {
-        Image(uiImage: image ?? Self.emptyImage)
+        Image(image ?? Self.emptyImage)
             .resizable()
             .contentShape(Rectangle())
             .frame(maxWidth: .infinity, maxHeight: .infinity)

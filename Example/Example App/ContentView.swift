@@ -12,8 +12,10 @@ struct ContentView: View {
 
     @Environment(\.exampleDataModel) var dataModel
 
+#if os(iOS)
     private let appWillEnterForeground = NotificationCenter.default
         .publisher(for: UIApplication.willEnterForegroundNotification)
+#endif
 
     @State private var stateDescription: String = StreamDeckSession.State.idle.debugDescription
     @State private var devices: [StreamDeck] = []
@@ -84,8 +86,10 @@ struct ContentView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onReceive(StreamDeckSession.instance.$state) { stateDescription = $0.debugDescription }
         .onReceive(StreamDeckSession.instance.$devices) { devices = $0 }
+#if os(iOS)
         .onReceive(appWillEnterForeground) { _ in checkDriverHostAppInstallation() }
         .onAppear { checkDriverHostAppInstallation() }
+#endif
         .overlay(alignment: .bottomTrailing) {
             Button("Show Stream Deck Simulator") {
                 StreamDeckSimulator.show(streamDeck: .regular)
@@ -95,9 +99,11 @@ struct ContentView: View {
         }
     }
 
+#if os(iOS)
     private func checkDriverHostAppInstallation() {
         isDriverHostInstalled = UIApplication.shared.canOpenURL(URL(string: "elgato-device-driver://")!)
     }
+#endif
 }
 
 #if DEBUG

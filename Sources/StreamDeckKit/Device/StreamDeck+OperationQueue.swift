@@ -25,7 +25,11 @@
 //  SOFTWARE.
 //
 
+#if canImport(UIKit)
 import UIKit
+#else
+import AppKit
+#endif
 
 extension StreamDeck {
 
@@ -45,7 +49,7 @@ extension StreamDeck {
         var isDrawingOperation: Bool {
             switch self {
             case .setKeyImage, .setScreenImage, .setWindowImage,
-                    .setWindowImageAt, .fillScreen, .fillKey:
+                 .setWindowImageAt, .fillScreen, .fillKey:
                 return true
             default: return false
             }
@@ -173,13 +177,16 @@ extension StreamDeck {
 
             client.setWindowImage(data, at: rect)
 
-        case let .fillScreen(color):
+        case .fillScreen(var color):
             if supports(.fillScreen) {
                 var red: CGFloat = 0
                 var green: CGFloat = 0
                 var blue: CGFloat = 0
                 var alpha: CGFloat = 0
 
+#if os(macOS)
+                color = color.usingColorSpace(.sRGB) ?? color
+#endif
                 color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
 
                 client.fillScreen(
@@ -191,13 +198,16 @@ extension StreamDeck {
                 fakeFillScreen(color)
             }
 
-        case let .fillKey(color, index):
+        case .fillKey(var color, let index):
             if supports(.fillKey) {
                 var red: CGFloat = 0
                 var green: CGFloat = 0
                 var blue: CGFloat = 0
                 var alpha: CGFloat = 0
 
+#if os(macOS)
+                color = color.usingColorSpace(.sRGB) ?? color
+#endif
                 color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
 
                 client.fillKey(
@@ -282,7 +292,7 @@ private extension StreamDeck {
 
         let image = renderer(size: keySize).image { context in
             color.setFill()
-            context.fill(.init(origin: .zero, size: keySize))
+            context.cgContext.fill([CGRect(origin: .zero, size: keySize)])
         }
         guard let data = transform(image, size: keySize, scaleAspectFit: false)
         else { return }

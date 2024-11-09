@@ -29,9 +29,19 @@ import Combine
 import Foundation
 import StreamDeckCApi
 import StreamDeckKit
+#if canImport(UIKit)
 import UIKit
+#else
+import AppKit
+#endif
 
 public final class StreamDeckSimulatorClient {
+
+#if canImport(UIKit)
+    public typealias Image = UIImage
+#else
+    public typealias Image = NSImage
+#endif
 
     private let capabilities: DeviceCapabilities
     private let brightnessSubject = CurrentValueSubject<Int, Never>(0)
@@ -59,13 +69,13 @@ public final class StreamDeckSimulatorClient {
             .eraseToAnyPublisher()
     }
 
-    public var backgroundImage: AnyPublisher<UIImage?, Never> {
+    public var backgroundImage: AnyPublisher<Image?, Never> {
         backgroundImageSubject
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 
-    public var keyImages: AnyPublisher<[Int: UIImage], Never> {
+    public var keyImages: AnyPublisher<[Int: Image], Never> {
         keyImageSubject
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()

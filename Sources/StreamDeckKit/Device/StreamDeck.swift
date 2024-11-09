@@ -28,13 +28,25 @@
 import Combine
 import Foundation
 import SwiftUI
+#if canImport(UIKit)
 import UIKit
+#else
+import AppKit
+#endif
 
 /// An object that represents a physical Stream Deck device.
 public final class StreamDeck {
     public typealias InputEventHandler = @MainActor (InputEvent) -> Void
 
     public typealias CloseHandler = () async -> Void
+
+#if canImport(UIKit)
+    public typealias Image = UIImage
+    public typealias Color = UIColor
+#else
+    public typealias Image = NSImage
+    public typealias Color = NSColor
+#endif
 
     let client: StreamDeckClientProtocol
     /// Basic information about the device.
@@ -138,7 +150,7 @@ public final class StreamDeck {
     ///
     /// Some devices do not support this feature (See ``DeviceCapabilities/Features-swift.struct/fillScreen``). StreamDeckKit will then
     /// simulate the behavior by setting the color to each button individually.
-    public func fillScreen(_ color: UIColor) {
+    public func fillScreen(_ color: Color) {
         enqueueOperation(.fillScreen(color: color))
     }
 
@@ -146,7 +158,7 @@ public final class StreamDeck {
     /// - Parameters:
     ///   - color: The color to fill the key with.
     ///   - at: The location of the key.
-    public func fillKey(_ color: UIColor, at key: Int) {
+    public func fillKey(_ color: Color, at key: Int) {
         enqueueOperation(.fillKey(color: color, key: key))
     }
 
@@ -161,7 +173,7 @@ public final class StreamDeck {
     ///
     /// StreamDeck devices do not support transparency in images. So you will not be able to render transparent images over a possible
     /// background, set by ``setScreenImage(_:scaleAspectFit:)``. Transparent areas will be replaced with black.
-    public func setKeyImage(_ image: UIImage, at key: Int, scaleAspectFit: Bool = true) {
+    public func setKeyImage(_ image: Image, at key: Int, scaleAspectFit: Bool = true) {
         enqueueOperation(.setKeyImage(image: image, key: key, scaleAspectFit: scaleAspectFit))
     }
 
@@ -175,11 +187,11 @@ public final class StreamDeck {
     ///
     /// Some devices do not support this feature (See ``DeviceCapabilities/Features-swift.struct/setScreenImage``). StreamDeckKit will then
     /// simulate the behavior by splitting up the image, and set the correct parts to each key individually.
-    public func setScreenImage(_ image: UIImage, scaleAspectFit: Bool = true) {
+    public func setScreenImage(_ image: Image, scaleAspectFit: Bool = true) {
         enqueueOperation(.setScreenImage(image: image, scaleAspectFit: scaleAspectFit))
     }
 
-    public func setWindowImage(_ image: UIImage, scaleAspectFit: Bool = true) {
+    public func setWindowImage(_ image: Image, scaleAspectFit: Bool = true) {
         enqueueOperation(.setWindowImage(image: image, scaleAspectFit: scaleAspectFit))
     }
 
@@ -191,7 +203,7 @@ public final class StreamDeck {
     ///   the image will be scaled to fill the whole `rect`.
     ///
     /// The image will be scaled to fit the dimensions of the given rectangle.
-    public func setWindowImage(_ image: UIImage, at rect: CGRect, scaleAspectFit: Bool = true) {
+    public func setWindowImage(_ image: Image, at rect: CGRect, scaleAspectFit: Bool = true) {
         enqueueOperation(.setWindowImageAt(image: image, at: rect, scaleAspectFit: scaleAspectFit))
     }
 
