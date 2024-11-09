@@ -151,7 +151,7 @@ final class StreamDeckClient {
         let (ret, output) = getScalar(SDExternalMethod_getDriverVersion, 3)
 
         guard let output = output else {
-            log(.error, "Error calling scalar method getDriverVersion (\(String(ioReturn: ret))")
+            Logger.default.error("Error calling scalar method getDriverVersion (\(String(ioReturn: ret))")
             return nil
         }
 
@@ -208,7 +208,7 @@ final class StreamDeckClient {
         }
 
         guard ret == kIOReturnSuccess else {
-            log(.error, "Error getStruct<\(String(reflecting: Value.self))>() \(String(format: "0x%08X", ret)) (\(String(ioReturn: ret)))")
+            Logger.default.error("Error getStruct<\(String(reflecting: Value.self))>() \(String(format: "0x%08X", ret)) (\(String(ioReturn: ret)))")
             return nil
         }
 
@@ -234,7 +234,7 @@ final class StreamDeckClient {
     private func callScalar(_ method: SDExternalMethod, _ args: UInt64 ...) -> IOReturn {
         let ret = IOConnectCallScalarMethod(connection, method.rawValue, args, UInt32(args.count), nil, nil)
         if ret != kIOReturnSuccess {
-            log(.error, "Error calling scalar method \(String(describing: method)) (\(String(ioReturn: ret))")
+            Logger.default.error("Error calling scalar method \(String(describing: method)) (\(String(ioReturn: ret))")
         }
         return ret
     }
@@ -269,14 +269,14 @@ final class StreamDeckClient {
 
         let callback: IOAsyncCallback = { context, result, args, argsCount in
             guard let context = context else {
-                log(.error, "Context is nil in async input event callback")
+                Logger.default.error("Context is nil in async input event callback")
                 return
             }
 
             let client = Unmanaged<StreamDeckClient>.fromOpaque(context).takeUnretainedValue()
 
             guard result == kIOReturnSuccess else {
-                log(.error, "Input event callback received non-success status (\(String(ioReturn: result))) - going to close")
+                Logger.default.error("Input event callback received non-success status (\(String(ioReturn: result))) - going to close")
                 client.errorHandler?(.disconnected(reason: "Input event callback is erroneous."))
                 client.close()
                 return
@@ -308,9 +308,8 @@ final class StreamDeckClient {
         )
 
         guard ret == kIOReturnSuccess else {
-            let errorMessage = "Error subscribing to input events (\(String(ioReturn: ret)))"
-            log(.error, errorMessage)
-            errorHandler?(.disconnected(reason: errorMessage))
+            Logger.default.error("Error subscribing to input events (\(String(ioReturn: ret)))")
+            errorHandler?(.disconnected(reason: "Error subscribing to input events (\(String(ioReturn: ret)))"))
             return
         }
     }
@@ -338,7 +337,7 @@ extension StreamDeckClient: StreamDeckClientProtocol {
         }
 
         guard ret == kIOReturnSuccess else {
-            log(.error, "Error calling struct method `setKeyImage` (\(String(ioReturn: ret)))")
+            Logger.default.error("Error calling struct method `setKeyImage` (\(String(ioReturn: ret)))")
             return
         }
     }
@@ -351,7 +350,7 @@ extension StreamDeckClient: StreamDeckClientProtocol {
         }
 
         guard ret == kIOReturnSuccess else {
-            log(.error, "Error calling setScreenImage \(String(format: "0x%08X", ret)) (\(String(ioReturn: ret)))")
+            Logger.default.error("Error calling setScreenImage \(String(format: "0x%08X", ret)) (\(String(ioReturn: ret)))")
             return
         }
     }
@@ -364,7 +363,7 @@ extension StreamDeckClient: StreamDeckClientProtocol {
         }
 
         guard ret == kIOReturnSuccess else {
-            log(.error, "Error calling setWindowImage \(String(format: "0x%08X", ret)) (\(String(ioReturn: ret)))")
+            Logger.default.error("Error calling setWindowImage \(String(format: "0x%08X", ret)) (\(String(ioReturn: ret)))")
             return
         }
     }
@@ -386,7 +385,7 @@ extension StreamDeckClient: StreamDeckClientProtocol {
         }
 
         guard ret == kIOReturnSuccess else {
-            log(.error, "Error calling struct method `setWindowImageAtXY` (\(String(ioReturn: ret)))")
+            Logger.default.error("Error calling struct method `setWindowImageAtXY` (\(String(ioReturn: ret)))")
             return
         }
     }

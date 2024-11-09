@@ -9,15 +9,17 @@ import OSLog
 import StreamDeckKit
 import SwiftUI
 
+extension Logger {
+    static let `default` = Logger(subsystem: "", category: "")
+    static let session = Logger(subsystem: "Session", category: "")
+}
+
 @main
 struct StreamDeckKitExampleApp: App {
 
     init() {
-        // Uncomment the next line to enable StreamDeckKit internal logging.
-        // streamDeckLoggingHandler = { os_log($0, "\($1)") }
-
         StreamDeckSession.setUp(
-            stateHandler: { os_log("Stream Deck session state: %s", String(describing: $0)) },
+            stateHandler: { Logger.session.info("Stream Deck session state: \(String(describing: $0.debugDescription))") },
             newDeviceHandler: { $0.render(BaseStreamDeckView()) }
         )
     }
