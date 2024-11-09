@@ -46,6 +46,11 @@ public protocol StreamDeckClientProtocol {
     func close()
 }
 
+protocol StreamDeckClientDeviceProtocol: StreamDeckClientProtocol {
+    func getDeviceInfo() async -> DeviceInfo?
+    func getDeviceCapabilities() -> DeviceCapabilities?
+}
+
 public enum StreamDeckClientError: Error {
     /// Client will close.
     case disconnected(reason: String)

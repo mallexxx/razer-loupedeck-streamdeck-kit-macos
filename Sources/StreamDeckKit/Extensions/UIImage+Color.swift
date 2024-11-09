@@ -58,6 +58,58 @@ public extension NSImage {
         return image
     }
 
+    private func argbBitmapData(_ inImage: CGImage, size: NSSize) -> Data {
+        let width = Int(size.width)
+        let height = Int(size.height)
+        let bitmapBytesPerRow = width * 4
+        let bitmapByteCount = bitmapBytesPerRow * height
+
+        var bitmapData = Data(count: bitmapByteCount)
+        bitmapData.withUnsafeMutableBytes { buffer in
+            let context = CGContext(data: buffer.baseAddress,
+                                    width: width,
+                                    height: height,
+                                    bitsPerComponent: 8,
+                                    bytesPerRow: bitmapBytesPerRow,
+                                    space: CGColorSpaceCreateDeviceRGB(),
+                                    bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue)!
+            let rect = NSRect(origin: .zero, size: size)
+            context.draw(inImage, in: rect)
+        }
+
+        return bitmapData
+    }
+
+    func rgb565data(with size: NSSize) -> Data {
+        var rect = NSRect(origin: .zero, size: self.size)
+        let cgImage = self.cgImage(forProposedRect: &rect, context: .current, hints: nil)!
+        let w = Int(size.width)
+        let h = Int(size.height)
+
+        var inData = argbBitmapData(cgImage, size: size)
+
+        var outData = Data(count: (w * 2) * h)
+        inData.withUnsafeMutableBytes { inBuffer in
+            outData.withUnsafeMutableBytes { outBuffer in
+                var src = vImage_Buffer()
+                src.data = inBuffer.baseAddress
+                src.width = vImagePixelCount(w)
+                src.height = vImagePixelCount(h)
+                src.rowBytes = w * 4
+
+                var dst = vImage_Buffer()
+                dst.data = outBuffer.baseAddress
+                dst.width = vImagePixelCount(w)
+                dst.height = vImagePixelCount(h)
+                dst.rowBytes = w * 2
+
+                vImageConvert_ARGB8888toRGB565(&src, &dst, 0)
+            }
+        }
+
+        return outData
+    }
+
 }
 
 #endif

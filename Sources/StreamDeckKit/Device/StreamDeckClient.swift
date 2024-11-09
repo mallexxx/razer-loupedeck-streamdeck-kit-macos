@@ -117,7 +117,10 @@ final class StreamDeckClient {
 
     private var notificationPort: IONotificationPortRef?
 
-    init(service: io_service_t) {
+    init?(service: io_service_t) {
+        guard let serviceName = IORegistryEntryCreateCFProperty(service, kIOProviderClassKey as CFString, kCFAllocatorDefault, 0)?.takeRetainedValue() as? String,
+              serviceName == "StreamDeckDriver" else { return nil }
+
         self.service = service
     }
 
@@ -158,7 +161,7 @@ final class StreamDeckClient {
         return .init(major: Int(output[0]), minor: Int(output[1]), patch: Int(output[2]))
     }
 
-    func getDeviceInfo() -> DeviceInfo? {
+    func getDeviceInfo() async -> DeviceInfo? {
         guard var rawInfo: SDDeviceInfo = getStruct(SDExternalMethod_getDeviceInfo) else {
             return nil
         }
@@ -316,7 +319,7 @@ final class StreamDeckClient {
 
 }
 
-extension StreamDeckClient: StreamDeckClientProtocol {
+extension StreamDeckClient: StreamDeckClientDeviceProtocol {
 
     func setErrorHandler(_ handler: @escaping ClientErrorHandler) {
         errorHandler = handler
@@ -404,7 +407,7 @@ extension StreamDeckClient: StreamDeckClientProtocol {
 
 }
 
-private extension ImageFormat {
+extension ImageFormat {
 
     init(format: SDImageFormat) {
         switch format.rawValue {
@@ -420,18 +423,18 @@ private extension ImageFormat {
     }
 }
 
-private extension SDPoint {
+extension SDPoint {
     var cgPoint: CGPoint { .init(x: Int(x), y: Int(y)) }
 }
 
-private extension SDSize {
+extension SDSize {
     var cgSize: CGSize? {
         guard width > 0, height > 0 else { return nil }
         return .init(width: Int(width), height: Int(height))
     }
 }
 
-private extension SDRect {
+extension SDRect {
     var cgRect: CGRect? {
         guard let size = size.cgSize else { return nil }
         return .init(origin: origin.cgPoint, size: size)

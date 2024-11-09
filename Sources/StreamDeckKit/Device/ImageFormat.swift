@@ -33,4 +33,5 @@ public enum ImageFormat: Hashable {
     case bmp
     case none
     case unknown(UInt32)
+    case rgb565
 }

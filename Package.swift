@@ -21,7 +21,11 @@ let package = Package(
         .package(
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.12.0"
-        )
+        ),
+        .package(
+            url: "https://github.com/mallexxx/SwiftSerial.git",
+            revision: "f9b315b5b4f152c4298220c094da3b98a7c3029e"
+        ),
     ],
     targets: [
         .target(
@@ -31,7 +35,7 @@ let package = Package(
         ),
         .target(
             name: "StreamDeckKit",
-            dependencies: ["StreamDeckCApi"]
+            dependencies: ["StreamDeckCApi", "SwiftSerial"]
         ),
         .target(
             name: "StreamDeckCApi",

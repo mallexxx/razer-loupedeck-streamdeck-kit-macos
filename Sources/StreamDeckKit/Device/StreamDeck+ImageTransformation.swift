@@ -119,7 +119,10 @@ extension StreamDeck {
         case .bmp:
             let image = renderer.image(actions: action)
             return image.bitmapData()
-        default:
+        case .rgb565:
+            let image = renderer.image(actions: action)
+            return image.rgb565data(with: size)
+        case .unknown, .none:
             return nil
         }
     }

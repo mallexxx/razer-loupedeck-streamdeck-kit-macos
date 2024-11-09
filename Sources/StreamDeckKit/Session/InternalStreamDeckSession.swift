@@ -28,7 +28,8 @@
 import Combine
 import OSLog
 import StreamDeckCApi
-import UIKit
+import IOKit.serial
+import IOKit.usb
 
 final actor InternalStreamDeckSession {
     nonisolated let state = CurrentValueSubject<StreamDeckSession.State, Never>(.idle)
@@ -43,7 +44,7 @@ final actor InternalStreamDeckSession {
     func start() async {
         guard state.value == .idle else { return }
         state.value = .started
-        startDeviceNotifier()
+        await startDeviceNotifier()
     }
 
     func stop() {
@@ -59,19 +60,25 @@ final actor InternalStreamDeckSession {
         }
 
         for device in devices.value {
+            device.fillScreen(.black)
+            device.setBrightness(0)
             device.close()
         }
 
         devices.value = []
     }
 
-    private func startDeviceNotifier() {
+    private func startDeviceNotifier() async {
         notificationPort = IONotificationPortCreate(kIOMainPortDefault)
         let runLoopSource = IONotificationPortGetRunLoopSource(notificationPort).takeUnretainedValue()
         CFRunLoopAddSource(RunLoop.main.getCFRunLoop(), runLoopSource, .defaultMode)
 
         var iterator: io_iterator_t = 0
+#if os(iOS)
         let matcher = IOServiceNameMatching("StreamDeckDriver") as NSDictionary
+#else
+        let matcher = IOServiceMatching(kIOUSBDeviceClassName)
+#endif
 
         let matchingCallback: IOServiceMatchingCallback = { context, iterator in
             let listener = Unmanaged<InternalStreamDeckSession>.fromOpaque(context!).takeUnretainedValue()
@@ -86,7 +93,7 @@ final actor InternalStreamDeckSession {
         let unsafeSelf = Unmanaged.passRetained(self).toOpaque()
 
         IOServiceAddMatchingNotification(notificationPort, kIOFirstMatchNotification, matcher, matchingCallback, unsafeSelf, &iterator)
-        deviceConnected(iterator)
+        await deviceConnected(iterator)
 
         // Notification port could be nil when `deviceConnected` closed the session due to an error.
         if notificationPort != nil {
@@ -95,44 +102,70 @@ final actor InternalStreamDeckSession {
         }
     }
 
-    private func deviceConnected(_ iterator: io_iterator_t) {
+    private func deviceConnected(_ iterator: io_iterator_t) async {
         while case let service = IOIteratorNext(iterator), service != IO_OBJECT_NULL {
-            let client = StreamDeckClient(service: service)
-            let ret = client.open()
-
-            guard ret == kIOReturnSuccess else {
-                Logger.default.error("Failed opening service with error: \(String(ioReturn: ret)).")
-                if ret == sdkIOReturnNotPermitted {
-                    state.value = .failed(.missingEntitlement)
+            let client: StreamDeckClientDeviceProtocol
+            if let loupedeckClient =  LoupedeckClient(service: service) {
+                do {
+                    try await loupedeckClient.open()
+                    client = loupedeckClient
+                } catch {
+                    Logger.default.error("Failed opening service with error: \(error).")
+                    if (error as? IOError)?.errorCode == sdkIOReturnNotPermitted {
+                        state.value = .failed(.missingEntitlement)
+                    }
+                    continue
                 }
+
+            } else if let streamDeckClient = StreamDeckClient(service: service) {
+                let ret = streamDeckClient.open()
+
+                guard ret == kIOReturnSuccess else {
+                    Logger.default.error("Failed opening service with error: \(String(ioReturn: ret)).")
+                    if ret == sdkIOReturnNotPermitted {
+                        state.value = .failed(.missingEntitlement)
+                    }
+                    continue
+                }
+
+                guard let version = streamDeckClient.getDriverVersion() else {
+                    Logger.default.error("Error fetching driver version - closing session.")
+                    state.value = .failed(.unexpectedDriverError)
+                    internalStop()
+                    return
+                }
+
+                guard version.major == StreamDeck.minimumDriverVersion.major,
+                      version >= StreamDeck.minimumDriverVersion
+                else {
+                    Logger.default.error("SDK driver version mismatch (driver version: \(version), SDK minimum version: \(StreamDeck.minimumDriverVersion)")
+                    driverVersion.value = version
+                    state.value = .failed(.driverVersionMismatch)
+                    internalStop()
+                    return
+                }
+
+                if driverVersion.value != version {
+                    driverVersion.value = version
+                }
+                client = streamDeckClient
+            } else {
                 continue
             }
 
-            guard let version = client.getDriverVersion() else {
-                Logger.default.error("Error fetching driver version - closing session.")
-                state.value = .failed(.unexpectedDriverError)
-                internalStop()
-                return
-            }
-
-            guard version.major == StreamDeck.minimumDriverVersion.major,
-                  version >= StreamDeck.minimumDriverVersion
-            else {
-                Logger.default.error("SDK driver version mismatch (driver version: \(version), SDK minimum version: \(StreamDeck.minimumDriverVersion)")
-                driverVersion.value = version
-                state.value = .failed(.driverVersionMismatch)
-                internalStop()
-                return
-            }
-
-            if driverVersion.value != version {
-                driverVersion.value = version
-            }
-
-            guard let device = createDevice(with: client, service: service) else {
+            guard let info = await client.getDeviceInfo() else {
+                Logger.default.error("Error fetching device info.")
+                client.close()
                 continue
             }
 
+            guard let capabilities = await client.getDeviceCapabilities() else {
+                Logger.default.error("Error fetching device capabilities \(String(reflecting: info)).")
+                client.close()
+                continue
+            }
+
+            let device = createDevice(with: client, deviceInfo: info, capabilities: capabilities, service: service)
             addDevice(device: device)
         }
     }
@@ -151,21 +184,9 @@ final actor InternalStreamDeckSession {
         removeDevice(device: device)
     }
 
-    private func createDevice(with client: StreamDeckClient, service: io_object_t) -> StreamDeck? {
-        guard let info = client.getDeviceInfo() else {
-            Logger.default.error("Error fetching device info.")
-            client.close()
-            return nil
-        }
-
-        guard let capabilities = client.getDeviceCapabilities() else {
-            Logger.default.error("Error fetching device capabilities \(String(reflecting: info)).")
-            client.close()
-            return nil
-        }
-
-        let device = StreamDeck(client: client, info: info, capabilities: capabilities)
-        Logger.default.debug("StreamDeck device attached (\(String(reflecting: info))).")
+    private func createDevice(with client: StreamDeckClientProtocol, deviceInfo: DeviceInfo, capabilities: DeviceCapabilities, service: io_object_t) -> StreamDeck {
+        let device = StreamDeck(client: client, info: deviceInfo, capabilities: capabilities)
+        Logger.default.debug("StreamDeck device attached (\(String(reflecting: deviceInfo))).")
 
         devicesByService[service] = device
 

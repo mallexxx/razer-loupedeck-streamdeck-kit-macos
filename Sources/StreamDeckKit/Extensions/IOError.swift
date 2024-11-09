@@ -28,6 +28,21 @@
 import Foundation
 import StreamDeckCApi
 
+struct IOError: Error, LocalizedError {
+    let errorCode: IOReturn
+
+    init?(errorCode: IOReturn) {
+        guard errorCode != kIOReturnSuccess else { return nil }
+
+        self.errorCode = errorCode
+    }
+
+    var errorDescription: String? {
+        String(ioReturn: errorCode)
+    }
+
+}
+
 extension String {
     init(ioReturn: IOReturn) {
         if let cString = mach_error_string(ioReturn) {
