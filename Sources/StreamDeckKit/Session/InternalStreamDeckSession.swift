@@ -110,7 +110,7 @@ final actor InternalStreamDeckSession {
                     try await loupedeckClient.open()
                     client = loupedeckClient
                 } catch {
-                    Logger.default.error("Failed opening service with error: \(error).")
+                    Logger.default.error("Failed opening service with error: \(error.localizedDescription).")
                     if (error as? IOError)?.errorCode == sdkIOReturnNotPermitted {
                         state.value = .failed(.missingEntitlement)
                     }
