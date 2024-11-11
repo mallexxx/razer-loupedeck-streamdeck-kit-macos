@@ -29,6 +29,6 @@ import Foundation
 import OSLog
 
 extension Logger {
-    static let `default` = Logger(subsystem: "", category: "")
+    static let `default` = Logger(subsystem: "StreamDeck", category: "")
     static let sdRender = Logger(subsystem: "SDRender", category: "")
 }
