@@ -55,11 +55,20 @@ final class LoupedeckClient {
         }
     }
 
-    enum ClientError: Error {
+    enum ClientError: Error, LocalizedError {
         case couldNotGetTtyPath
         case portUnavailable
         case unexpectedPacketSize(expected: Int, actual: Int)
         case portClosed
+
+        var errorDescription: String? {
+            switch self {
+            case .couldNotGetTtyPath: return "Could not get TTY path"
+            case .portUnavailable: return "Port is unavailable"
+            case .unexpectedPacketSize(expected: let expected, actual: let actual): return "Unexpected packet size: \(expected) != \(actual)"
+            case .portClosed: return "Port is closed"
+            }
+        }
     }
 
     let device:  LoupedeckDevice
