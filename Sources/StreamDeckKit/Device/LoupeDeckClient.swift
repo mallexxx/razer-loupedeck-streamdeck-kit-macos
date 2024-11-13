@@ -115,8 +115,15 @@ final class LoupedeckClient {
         let ret = IOServiceOpen(service, mach_task_self_, 0, &connection)
         if let error = IOError(errorCode: ret) { throw error }
 
-        guard let ttyPath = service.ttyPath else { throw ClientError.couldNotGetTtyPath }
-        Logger.default.debug("\(self.description): tty path: \(ttyPath)")
+        var ttyPath: String?
+        for _ in 0..<20 {
+            ttyPath = service.ttyPath
+            if ttyPath != nil { break }
+            Logger.default.debug("\(self.description): Could not get TTY path, waiting…")
+            try await Task.sleep(for: .milliseconds(300))
+        }
+        guard let ttyPath else { throw ClientError.couldNotGetTtyPath }
+        Logger.default.debug("\(self.description): TTY path: \(ttyPath)")
 
         let serialPort = SerialPort(path: ttyPath)
         try serialPort.openPort(portMode: [.readWrite, .noControllingTerminal, .exclusiveLock, .nonBlocking, .closeOnExec, .sync])
